@@ -1,9 +1,6 @@
-25519 [![Build Status](https://travis-ci.org/mukarev/Ecc25519.svg?branch=master)](https://travis-ci.org/mukarev/Ecc25519)
+Ecc25519
 =====
 
-Complete redesign based on ideas of [FredericJacobs/25519](https://github.com/FredericJacobs/25519) project.
-
-NEW:
 One central provider of functions Ecc25519.h
 Using 64bit C implementation of Curve25519 by Matthijs van Duin
 New Structure offers
@@ -11,6 +8,8 @@ New Structure offers
 - Data Signing by Edwards/SHA512
 - Key Expansion (32byte to 64 byte)
 - Diffie Hellman Key Agreement by Curve25519
+
+Complete redesign based on ideas of [FredericJacobs/25519](https://github.com/FredericJacobs/25519) project.
 
 ## Usage
 
