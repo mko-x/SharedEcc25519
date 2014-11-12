@@ -1,0 +1,47 @@
+200608242056
+	- removed the last few instances of data-dependent branching outside 
+	  the signer-private-key generation.
+
+200608241654
+	- all code seems to work now, passes fairly rigorous tests
+	- improved benchmark and self-test code
+	- describe EC-KCDSA in header file
+
+200608232244
+	- fixed bugs in sign-key generation and signing
+	- initial implementation of verify, doesn't work yet
+
+200608222100
+	- now fixed timing again for everything except generating a private 
+	  key for signing, and that'll do for me.
+	- implemented sign (not yet tested)
+
+200508221644
+	- made divmod fixed-timing (depending only on size of arguments)
+	- confirmed egcd makes curve25519 noticably vary in timing;  need to 
+	  find alternate solution, one which works for mod-p and mod-q
+	- further improved benchmark code
+
+200608221049
+	- revised API, now including signing (not yet implemented)
+	- faster field division using egcd
+	- signer key generation implemented (not fully tested)
+
+200608191518
+	- simplified exported interface
+	- more cleanly structured curve25519 code
+	- simpler benchmarking and self-test code
+
+200608182153
+	- merged montgomery25519 into point25519
+	- removed remaining data-dependent branches
+	- improved benchmarking and self-test code
+
+200608181633
+	- fixed bug in pack25519
+	- optionally also output (n+1)P from point25519
+	- documentation fixes
+	- slightly cleaned up code of montgomery25519
+
+200608180214
+	- initial release

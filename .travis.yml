@@ -1,0 +1,4 @@
+language: objective-c
+xcode_project: BuildTests/BuildTests.xcodeproj
+xcode_scheme: BuildTestsTests
+xcode_sdk: iphonesimulator

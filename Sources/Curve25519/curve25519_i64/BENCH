@@ -1,0 +1,148 @@
+/* Generic 64-bit integer implementation of Curve25519 ECDH
+ * Written by Matthijs van Duin, 200608242056
+ * Public domain.
+ */
+
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include "time_this.h"
+#include "curve25519_i64.h"
+
+static k25519 e1 = { 3 }, e2 = { 5 }, k = { 9 };
+static k25519 e1k, e2k, e1e2k, e2e1k, e1s, e2s;
+
+static void xor25519(k25519 d, const k25519 s) {
+	unsigned i;
+	for (i = 0; i < 32; i++)
+		d[i] ^= s[i];
+}
+
+static void test_equal(const k25519 a, const k25519 b) {
+	unsigned i;
+	for (i = 0; i < 32; i++) {
+		if (a[i] != b[i]) {
+			fprintf(stderr, "\n*** consistency check failed ***\n");
+			exit(EXIT_FAILURE);
+		}
+	}
+}
+
+static inline void state_update(void) {
+	test_equal(e1e2k, e2e1k);
+	xor25519(e1, e2k);
+	xor25519(e2, e1k);
+	xor25519( k, e1e2k);
+}
+
+static void bench_nop(void) {
+	state_update();
+}
+
+static void bench_agree(void) {
+	curve25519(  e1k, e1,   k);
+	curve25519(e2e1k, e2, e1k);
+	curve25519(  e2k, e2,   k);
+	curve25519(e1e2k, e1, e2k);
+	state_update();
+}
+
+static void bench_verify(void) {
+	verify25519(  e1k, e1, zero25519,   k);
+	verify25519(e2e1k, e2, zero25519, e1k);
+	verify25519(  e2k, e2, zero25519,   k);
+	verify25519(e1e2k, e1, zero25519, e2k);
+	state_update();
+}
+
+static void bench_keygen(void) {
+	keygen25519(e1k, e1s, e1);
+	keygen25519(e2k, e2s, e2);
+	verify25519(e1e2k, e1s, k, e1k);
+	verify25519(e2e1k, e2s, k, e2k);
+	state_update();
+}
+
+static void bench_sign(void) {
+	keygen25519(e1k, e1, e1);
+	keygen25519(e1e2k, NULL, e2);
+	sign25519(e2k, e1e2k, e2, e1);
+	verify25519(e2e1k, e2k, e1e2k, e1k);
+	state_update();
+}
+
+#define COUNT 2000
+#define TRIES 3
+
+static double benchmark(const char *what, void (*proc)(), void (*nop)(),
+					unsigned div, double offset) {
+	unsigned i;
+	double time, leasttime = 1e10;
+
+	fprintf(stderr, " %-18s : ", what);
+	for (i = TRIES; i--; ) {
+		time = time_this(proc, COUNT / div);
+		time -= time_this(nop, COUNT / div);
+
+		time = time / (COUNT * 1000) - offset;
+
+		if (time < leasttime)
+			leasttime = time;
+
+		fprintf(stderr, "%.3lf ", time);
+	}
+
+	fprintf(stderr, "ms\n");
+
+	return leasttime;
+}
+
+void printhex(uint8_t *p, unsigned n) {
+	unsigned i;
+	for (i = n; i < 32; i++)
+		fprintf(stderr, "  ");
+	for (i = 0; i < n; i++)
+		fprintf(stderr, "%hhu, ", p[i]);
+	fprintf(stderr, "\n");
+}
+
+static const k25519 check1 = { 255, 153, 2, 78, 126, 231, 146, 145, 26, 255,
+	202, 198, 120, 154, 239, 219, 81, 85, 90, 245, 200, 21, 212, 168, 212,
+	173, 200, 134, 193, 134, 40, 59 };
+
+static const k25519 check2 = { 4, 104, 164, 208, 209, 140, 151, 93, 72, 158,
+	222, 60, 125, 144, 106, 156, 92, 147, 23, 242, 55, 205, 177, 40, 247,
+	214, 178, 151, 252, 74, 150, 25 };
+
+static const k25519 check3 = { 102, 104, 149, 19, 117, 243, 84, 43, 51, 192,
+	17, 93, 58, 3, 64, 149, 11, 231, 126, 17, 36, 194, 137, 145, 86, 189,
+	235, 42, 147, 13, 202, 36 };
+
+static const k25519 check4 = { 9, 207, 229, 5, 75, 70, 10, 63, 222, 112, 123,
+	118, 148, 64, 234, 30, 4, 222, 173, 25, 192, 20, 77, 125, 133, 130,
+	244, 103, 99, 200, 173, 102 };
+
+static const k25519 check5 = { 71, 17, 254, 189, 183, 208, 95, 116, 185, 63,
+	163, 50, 130, 44, 231, 155, 150, 39, 72, 139, 42, 211, 82, 0, 249, 172,
+	10, 191, 147, 50, 100, 101 };
+
+int main() {
+	double tc, tv, tk;
+
+	fprintf(stderr, "\n--- Diffie Hellman (ECDH) ---\n");
+	tc = benchmark("Key agreement", bench_agree, bench_nop, 4, 0);
+	test_equal(k, check1);
+	fprintf(stderr, " Keypair generation : same\n");
+
+	fprintf(stderr, "\n--- Digital Signatures (EC-KCDSA) ---\n");
+	tv = benchmark("Verification", bench_verify, bench_nop, 4, 0);
+	test_equal(k, check2);
+	tk = benchmark("Keypair generation", bench_keygen, bench_nop, 2, tv);
+	test_equal(e1k, check3);
+	test_equal(e2k, check4);
+	benchmark("Signing", bench_sign, bench_nop, 1, tk + tv);
+	test_equal(k, check5);
+
+	fprintf(stderr, "\n");
+	return 0;
+}
