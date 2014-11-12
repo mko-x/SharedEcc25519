@@ -2,8 +2,8 @@
 //  BuildTestsTests.m
 //  BuildTestsTests
 //
-//  Created by Frederic Jacobs on 22/07/14.
-//  Copyright (c) 2014 Frederic Jacobs. All rights reserved.
+//  Created by Markus Kosmal on 12/11/14.
+//  Copyright (c) 2014 Markus Kosmal. All rights reserved.
 //
 
 #import <XCTest/XCTest.h>
