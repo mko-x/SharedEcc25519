@@ -38,8 +38,8 @@ extern void ecc_keygen(unsigned char* P,
                        unsigned char* k);
 
 extern void ecc_curve(unsigned char* Z,
-                      unsigned char* k,
-                      unsigned char* P);
+                      const unsigned char* k,
+                      const unsigned char* P);
 
 @implementation Ecc25519
 
@@ -47,17 +47,8 @@ extern void ecc_curve(unsigned char* Z,
     if(output == nil){
         output = malloc(kKeyLength);
     }
-    curve25519_donna(output, secret, basepoint);
+    ecc_curve(output, secret, basepoint);
 }
-
-//+(NSData*) clamp: (NSData *) key{
-//    
-//    uint8_t *keyRef = (uint8_t*)[key bytes];
-//    
-//    ecc_clamp(keyRef);
-//    
-//    return [[NSData dataWithBytes:keyRef length:sizeof(keyRef)] copy];
-//}
 
 +(NSData*) clamp: (NSData *) key{
     
@@ -76,7 +67,9 @@ extern void ecc_curve(unsigned char* Z,
     
     ecc_keygen(publicDiffieHellman, NULL, keyPrivateProvided);
     
-    return [NSData dataWithBytes:publicDiffieHellman length:sizeof(publicDiffieHellman)];
+    NSData * result = [NSData dataWithBytes:publicDiffieHellman length:sizeof(publicDiffieHellman)];
+    
+    return  result;
 }
 
 +(NSData*) curvePrivate:(NSData*) privateKey withPublicKey: (NSData*) publicKey{

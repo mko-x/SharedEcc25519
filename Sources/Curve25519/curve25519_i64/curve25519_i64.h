@@ -44,12 +44,7 @@ void clamp25519(priv25519 k) {
 	k[ 0] &= 0xF8;
 }
 
-/*
-    Allow public clamp.
- */
-void ecc_clamp(unsigned char* k){
-    clamp25519(k);
-}
+
 
 /* Key-pair generation
  *   P  [out] your public key
@@ -65,12 +60,7 @@ void keygen25519(pub25519 P, spriv25519 s, priv25519 k) {
 	core25519(P, s, k, NULL);
 }
 
-/*
- Allow public keygen.
- */
-void ecc_keygen(unsigned char* P, unsigned char* s, unsigned char* k){
-    keygen25519(P, s, k);
-}
+
 
 /* Key agreement
  *   Z  [out] shared secret (needs hashing before use)
@@ -80,10 +70,6 @@ void ecc_keygen(unsigned char* P, unsigned char* s, unsigned char* k){
 static inline
 void curve25519(sec25519 Z, const priv25519 k, const pub25519 P) {
 	core25519(Z, NULL, k, P);
-}
-
-void ecc_curve(unsigned char* Z, unsigned char* k, unsigned char* P){
-    curve25519(Z, k, P);
 }
 
 /********* DIGITAL SIGNATURES *********/
@@ -143,5 +129,27 @@ int sign25519(k25519 v, const k25519 h, const priv25519 x, const spriv25519 s);
  */
 void verify25519(pub25519 Y, const k25519 v, const k25519 h, const pub25519 P);
 
+/*
+ * Wrapper for architecture independent calls.
+ *
+ *
+ */
 
+void ecc_curve(unsigned char* Z, unsigned char* k, unsigned char* P){
+    curve25519(Z, k, P);
+}
+
+/*
+ Allow public keygen.
+ */
+void ecc_keygen(unsigned char* P, unsigned char* s, unsigned char* k){
+    keygen25519(P, s, k);
+}
+
+/*
+ Allow public clamp.
+ */
+void ecc_clamp(unsigned char* k){
+    clamp25519(k);
+}
 #endif
