@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <title>SharedEcc25519 by mko-x</title>
+    <link rel="stylesheet" href="stylesheets/styles.css">
+    <link rel="stylesheet" href="stylesheets/pygment_trac.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+    <script src="javascripts/main.js"></script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+  </head>
+  <body>
+
+      <header>
+        <h1>SharedEcc25519</h1>
+        <p>ANSI-C based cross-platform elliptic eurve cryptography provider with objc api</p>
+      </header>
+
+      <div id="banner">
+        <span id="logo"></span>
+
+        <a href="https://github.com/mko-x/SharedEcc25519" class="button fork"><strong>View On GitHub</strong></a>
+        <div class="downloads">
+          <span>Downloads:</span>
+          <ul>
+            <li><a href="https://github.com/mko-x/SharedEcc25519/zipball/master" class="button">ZIP</a></li>
+            <li><a href="https://github.com/mko-x/SharedEcc25519/tarball/master" class="button">TAR</a></li>
+          </ul>
+        </div>
+      </div><!-- end banner -->
+
+    <div class="wrapper">
+      <nav>
+        <ul></ul>
+      </nav>
+      <section>
+        <h1>
+<a id="ecc25519" class="anchor" href="#ecc25519" aria-hidden="true"><span class="octicon octicon-link"></span></a>Ecc25519</h1>
+
+<p>One central provider of functions Ecc25519.h
+Using 64bit C implementation of Curve25519 by Matthijs van Duin
+New Structure offers</p>
+
+<ul>
+<li>Public Key Signature generation by Edwards</li>
+<li>Data Signing by Edwards/SHA512</li>
+<li>Key Expansion (32byte to 64 byte)</li>
+<li>Diffie Hellman Key Agreement by Curve25519</li>
+</ul>
+
+<p>Complete redesign based on ideas of <a href="https://github.com/FredericJacobs/25519">FredericJacobs/25519</a> project.</p>
+
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
+
+<h3>
+<a id="diffie-hellman" class="anchor" href="#diffie-hellman" aria-hidden="true"><span class="octicon octicon-link"></span></a>Diffie Hellman</h3>
+
+<p>Generating a Diffie Hellman public key:</p>
+
+<div class="highlight highlight-objective-c"><pre><span class="pl-s3">NSData</span> * publicKeyDiffieHellman = [Ecc25519 <span class="pl-s3">keygen:</span>keyPrivate];</pre></div>
+
+<hr>
+
+<p>Computing a shared secret with Diffie Hellman:</p>
+
+<div class="highlight highlight-objective-c"><pre><span class="pl-s3">NSData</span> * sharedSecret = [Ecc25519 <span class="pl-s3">curvePrivate:</span>privateKey <span class="pl-s3">withPublicKey:</span>publicKey];</pre></div>
+
+<hr>
+
+<h3>
+<a id="edwards" class="anchor" href="#edwards" aria-hidden="true"><span class="octicon octicon-link"></span></a>Edwards</h3>
+
+<p>Expand a private 32byte key to 64byte by Edwards keypair signing:</p>
+
+<div class="highlight highlight-objective-c"><pre><span class="pl-s3">NSData</span> * privateKey = [Ecc25519 <span class="pl-s3">expandPrivateKey:</span>privateKey];</pre></div>
+
+<hr>
+
+<p>Compute the public key signature of a private key:</p>
+
+<div class="highlight highlight-objective-c"><pre><span class="pl-s3">NSData</span> * publicKeySignature = [Ecc25519 <span class="pl-s3">computePublicKeySignature:</span>keyPrivate];</pre></div>
+
+<hr>
+
+<p>Create a signature of a message or data with a private key:</p>
+
+<div class="highlight highlight-objective-c"><pre><span class="pl-s3">NSData</span> * signature = [Ecc25519 <span class="pl-s3">sign:</span>message <span class="pl-s3">withPrivateKey:</span>privateKey];</pre></div>
+
+<hr>
+
+<p>Verify a signature of a message or data with a public key:</p>
+
+<div class="highlight highlight-objective-c"><pre><span class="pl-st">BOOL</span> isValid = [Ecc25519 <span class="pl-s3">verify:</span>signature <span class="pl-s3">ofMessage:</span>message <span class="pl-s3">withPublicKey:</span>publicKey]</pre></div>
+
+<hr>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Add this line to your <code>Podfile</code></p>
+
+<pre><code>pod 'Ecc25519', '~&gt; version number'
+</code></pre>
+
+<h2>
+<a id="cryptographics" class="anchor" href="#cryptographics" aria-hidden="true"><span class="octicon octicon-link"></span></a>Cryptographics</h2>
+
+<p>Curve25519 x86 - <a href="https://www.imperialviolet.org/">Adam Langley</a>’s <a href="https://github.com/agl/curve25519-donna">curve25519-donna</a></p>
+
+<p>Curve25519 x64 - Matthijs van Duin, based on work by <a href="http://cr.yp.to/ecdh.html">Daniel J Bernstein</a></p>
+
+<p>Edwards25519 - <a href="http://trevp.net/">Trevor Perrin</a> - extracted from <a href="https://www.github.com/trevp/ref10_extract">Ref 10 of ed25519 and curve25519 from supercop-20140529</a></p>
+
+<h2>
+<a id="source" class="anchor" href="#source" aria-hidden="true"><span class="octicon octicon-link"></span></a>Source</h2>
+
+<p><a href="https://github.com/mko-x/SharedEcc25519">https://github.com/mko-x/SharedEcc25519</a></p>
+
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
+
+<p>GPLv3 - copy attached and online <a href="http://www.gnu.org/licenses/gpl-3.0.html">http://www.gnu.org/licenses/gpl-3.0.html</a></p>
+      </section>
+      <footer>
+        <p>Project maintained by <a href="https://github.com/mko-x">mko-x</a></p>
+        <p><small>Hosted on GitHub Pages &mdash; Theme by <a href="https://twitter.com/michigangraham">mattgraham</a></small></p>
+      </footer>
+    </div>
+    <!--[if !IE]><script>fixScale(document);</script><![endif]-->
+    
+  </body>
+</html>
